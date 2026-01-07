@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:muscle_selector/muscle_selector.dart';
-import 'package:muscle_selector/src/size_controller.dart';
+import '../size_controller.dart';
+import '../models/muscle.dart';
 
 class MusclePainter extends CustomPainter {
   final Muscle muscle;

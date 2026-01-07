@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muscle_selector/muscle_selector.dart';
-import 'package:muscle_selector/src/widgets/muscle_painter.dart';
 import '../parser.dart';
 import '../size_controller.dart';
+import '../models/muscle.dart';
+import 'muscle_painter.dart';
 
 class MusclePickerMap extends StatefulWidget {
   final double? width;

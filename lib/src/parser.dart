@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:muscle_selector/muscle_selector.dart';
 import 'package:svg_path_parser/svg_path_parser.dart';
 import 'package:collection/collection.dart';
 import 'size_controller.dart';
 import 'constant.dart';
+import 'models/muscle.dart';
 
 class Parser {
   static Parser? _instance;
