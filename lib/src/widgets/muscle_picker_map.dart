@@ -16,6 +16,8 @@ class MusclePickerMap extends StatefulWidget {
   final bool? isEditing;
   final Set<Muscle>? initialSelectedMuscles;
   final List<String>? initialSelectedGroups;
+  final Color Function(Muscle muscle)? colorForMuscle;
+  final bool selectByGroup;
 
   const MusclePickerMap({
     Key? key,
@@ -29,7 +31,9 @@ class MusclePickerMap extends StatefulWidget {
     this.actAsToggle,
     this.isEditing = false,
     this.initialSelectedMuscles,
-    this.initialSelectedGroups
+    this.initialSelectedGroups,
+    this.colorForMuscle,
+    this.selectByGroup = true,
   }) : super(key: key);
 
   @override
@@ -105,6 +109,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
           dotColor: widget.dotColor,
           selectedColor: widget.selectedColor,
           strokeColor: widget.strokeColor,
+          colorForMuscle: widget.colorForMuscle,
         ),
         child: Container(
           width: widget.width ?? double.infinity,
@@ -121,39 +126,51 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   void _toggleButton(Muscle muscle) {
     setState(() {
-      final group = Parser.muscleGroups.entries.firstWhere(
-            (entry) => entry.value.contains(muscle.id),
-        orElse: () => const MapEntry('', []),
-      );
+      if (widget.selectByGroup) {
+        final group = Parser.muscleGroups.entries.firstWhere(
+              (entry) => entry.value.contains(muscle.id),
+          orElse: () => const MapEntry('', []),
+        );
 
-      if (group.key.isNotEmpty) {
-        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
-        if (relatedMuscles.every((m) => selectedMuscles.contains(m))) {
-          selectedMuscles.removeAll(relatedMuscles);
+        if (group.key.isNotEmpty) {
+          final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+          if (relatedMuscles.every((m) => selectedMuscles.contains(m))) {
+            selectedMuscles.removeAll(relatedMuscles);
+          } else {
+            selectedMuscles.addAll(relatedMuscles);
+          }
         } else {
-          selectedMuscles.addAll(relatedMuscles);
+          _toggleSingleMuscle(muscle);
         }
       } else {
-        if (selectedMuscles.contains(muscle)) {
-          selectedMuscles.remove(muscle);
-        } else {
-          selectedMuscles.add(muscle);
-        }
+        _toggleSingleMuscle(muscle);
       }
       widget.onChanged.call(selectedMuscles);
     });
   }
 
+  void _toggleSingleMuscle(Muscle muscle) {
+    if (selectedMuscles.contains(muscle)) {
+      selectedMuscles.remove(muscle);
+    } else {
+      selectedMuscles.add(muscle);
+    }
+  }
+
   void _useButton(Muscle muscle) {
     setState(() {
-      final group = Parser.muscleGroups.entries.firstWhere(
-            (entry) => entry.value.contains(muscle.id),
-        orElse: () => const MapEntry('', []),
-      );
+      if (widget.selectByGroup) {
+        final group = Parser.muscleGroups.entries.firstWhere(
+              (entry) => entry.value.contains(muscle.id),
+          orElse: () => const MapEntry('', []),
+        );
 
-      if (group.key.isNotEmpty) {
-        final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
-        selectedMuscles.addAll(relatedMuscles);
+        if (group.key.isNotEmpty) {
+          final relatedMuscles = _muscleList.where((m) => group.value.contains(m.id)).toList();
+          selectedMuscles.addAll(relatedMuscles);
+        } else {
+          selectedMuscles.add(muscle);
+        }
       } else {
         selectedMuscles.add(muscle);
       }

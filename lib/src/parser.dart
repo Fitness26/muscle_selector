@@ -39,8 +39,19 @@ class Parser {
   };
 
   Set<Muscle> getMusclesByGroups(List<String> groupKeys, List<Muscle> muscleList) {
-    final groupIds = groupKeys.expand((groupKey) => muscleGroups[groupKey] ?? []).toSet();
-    return muscleList.where((muscle) => groupIds.contains(muscle.id)).toSet();
+    final Set<String> muscleIds = {};
+
+    for (final key in groupKeys) {
+      if (muscleGroups.containsKey(key)) {
+        // Es un grupo, añadir todos sus músculos
+        muscleIds.addAll(muscleGroups[key]!);
+      } else {
+        // Es un ID individual de músculo
+        muscleIds.add(key);
+      }
+    }
+
+    return muscleList.where((muscle) => muscleIds.contains(muscle.id)).toSet();
   }
 
   Future<List<Muscle>> svgToMuscleList(String body) async {
@@ -57,18 +68,7 @@ class Parser {
       sizeController.addBounds(path.getBounds());
 
       final muscle = Muscle(id: id, title: title, path: path);
-
       muscleList.add(muscle);
-
-      final group = muscleGroups.entries.firstWhereOrNull((entry) => entry.value.contains(id));
-      if (group != null) {
-        for (var groupId in group.value) {
-          if (groupId != id) {
-            final groupMuscle = Muscle(id: groupId, title: title, path: path);
-            muscleList.add(groupMuscle);
-          }
-        }
-      }
     });
 
     return muscleList;
