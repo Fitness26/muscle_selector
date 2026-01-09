@@ -92,7 +92,7 @@ class MusclePickerMapState extends State<MusclePickerMap> {
 
   Widget _buildStackItem(Muscle muscle) {
 
-    final bool isSelectable = muscle.id != 'human_body' && !widget.isEditing!;
+    final bool isSelectable = (muscle.id != 'human_body' && muscle.id != 'human_body_female') && !widget.isEditing!;
 
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
